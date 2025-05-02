@@ -18,6 +18,7 @@ let marker;
 let watchID;
 let ruta = [];
 
+// Inicializar mapa
 function initMap() {
   const centro = { lat: 4.570868, lng: -74.297333 };
   map = new google.maps.Map(document.getElementById("map"), {
@@ -33,6 +34,7 @@ function initMap() {
   });
 }
 
+// Iniciar seguimiento y guardar en Firebase
 function activarUbicacion() {
   const nombre = document.getElementById("nombreReciclador").value.trim();
   if (!nombre) {
@@ -56,9 +58,7 @@ function activarUbicacion() {
       marker.setPosition(punto);
       map.setCenter(punto);
 
-      // 🔥 Guardar trayectoria en Firebase
       db.collection("rutas").doc(nombre).set({ trayectoria: ruta });
-
     }, (error) => {
       console.error("Error GPS:", error);
       alert("Error obteniendo ubicación.");
@@ -77,7 +77,13 @@ function detenerUbicacion() {
   }
 }
 
+// Mostrar trayectoria individual desde Firebase
 function mostrarTrayectoria(nombre) {
+  if (!nombre) {
+    nombre = document.getElementById("nombreReciclador").value.trim();
+  }
+  if (!nombre) return alert("Ingrese el nombre del reciclador.");
+
   db.collection("rutas").doc(nombre).get().then(doc => {
     if (!doc.exists) {
       alert("No se encontró trayectoria para ese reciclador.");
@@ -101,9 +107,42 @@ function mostrarTrayectoria(nombre) {
 }
 
 function mostrarTodasTrayectorias() {
-  alert("En esta versión sólo se puede mostrar una trayectoria a la vez.");
+  alert("Solo se muestra una trayectoria a la vez en esta versión.");
 }
 
 function cambiarEstado(estado) {
   alert(`Estado del reciclador cambiado a: ${estado}`);
 }
+
+// Registro de usuarios
+document.addEventListener("DOMContentLoaded", () => {
+  const registroForm = document.getElementById("registroForm");
+  const tabla = document.querySelector("#tablaUsuarios tbody");
+
+  registroForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const nombre = document.getElementById("nombre").value;
+    const nit = document.getElementById("nit").value;
+    const direccion = document.getElementById("direccion").value;
+    const sector = document.getElementById("sector").value;
+    const telefono = document.getElementById("telefono").value;
+    const correo = document.getElementById("correo").value;
+
+    const fila = document.createElement("tr");
+    fila.innerHTML = `
+      <td>${nombre}</td>
+      <td>${nit}</td>
+      <td>${direccion}</td>
+      <td>${sector}</td>
+      <td>${telefono}</td>
+      <td>${correo}</td>
+    `;
+    tabla.appendChild(fila);
+
+    // También podrías guardar esto en Firebase si deseas:
+    // db.collection("usuarios").add({ nombre, nit, direccion, sector, telefono, correo });
+
+    registroForm.reset();
+    alert("Usuario registrado correctamente.");
+  });
+});
