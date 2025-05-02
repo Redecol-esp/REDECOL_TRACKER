@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seguimiento de Recicladores - REDECOL</title>
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Google Maps con tu API key correcta -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD3b9oEisECPPV3z9LsnxE4AYHelgGjWYs&callback=initMap" async defer></script>
+</head>
+<body>
+
+  <header>
+    <img src="LOGO SIN FONDO.png" alt="Logo REDECOL E.S.P." id="logo">
+    <h1>REDECOL E.S.P.</h1>
+    <p>Seguimiento de Recolección</p>
+  </header>
+
+  <div class="container">
+    <!-- Registro de Usuario -->
+    <h2>Registro de Usuario</h2>
+    <form id="registroForm">
+      <input type="text" id="nombre" placeholder="Nombre o Razón Social" required>
+      <input type="text" id="nit" placeholder="NIT o Cédula" required>
+      <input type="text" id="direccion" placeholder="Dirección" required>
+      <input type="text" id="sector" placeholder="Sector (industrial, comercial, residencial, institucional)" required>
+      <input type="text" id="telefono" placeholder="Teléfono" required>
+      <input type="email" id="correo" placeholder="Correo Electrónico" required>
+      <button type="submit">Registrar</button>
+    </form>
+
+    <hr>
+
+    <!-- Control del Reciclador -->
+    <h2>Control de Seguimiento</h2>
+    <input type="text" id="nombreReciclador" placeholder="Nombre o ID del reciclador">
+    <div class="buttons">
+      <button onclick="activarUbicacion()">📍 Iniciar seguimiento</button>
+      <button onclick="detenerUbicacion()">⏹️ Detener seguimiento</button>
+    </div>
+
+    <h3>Estado del Servicio:</h3>
+    <div class="buttons">
+      <button onclick="cambiarEstado('Disponible')">Disponible</button>
+      <button onclick="cambiarEstado('En Ruta')">En Ruta</button>
+      <button onclick="cambiarEstado('Finalizado')">Finalizado</button>
+    </div>
+
+    <h3>Visualización de Rutas:</h3>
+    <div class="buttons">
+      <button onclick="cargarRuta()">Ver mi ruta</button>
+      <button onclick="mostrarTrayectoria(document.getElementById('nombreReciclador').value)">
+        Ver trayectoria individual
+      </button>
+      <button onclick="mostrarTodasTrayectorias()">
+        Ver todas las trayectorias
+      </button>
+    </div>
+
+    <div id="map"></div>
+
+    <h2>Usuarios Registrados</h2>
+    <table id="tablaUsuarios">
+      <thead>
+        <tr>
+          <th>Nombre</th><th>NIT/Cédula</th><th>Dirección</th>
+          <th>Sector</th><th>Teléfono</th><th>Correo</th>
+        </tr>
+      </thead>
+      <tbody><!-- Dinámico --></tbody>
+    </table>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <!-- Script de inicialización del mapa -->
+  <script>
+    function initMap() {
+      const ubicacionInicial = { lat: 4.570868, lng: -74.297333 }; // Colombia
+      const map = new google.maps.Map(document.getElementById("map"), {
+        center: ubicacionInicial,
+        zoom: 6,
+      });
+
+      // Ejemplo de marcador
+      new google.maps.Marker({
+        position: ubicacionInicial,
+        map,
+        title: "Ubicación inicial",
+      });
+    }
+  </script>
+
+  <!-- Lógica principal -->
+  <script src="script.js"></script>
+</body>
+</html>
