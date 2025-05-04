@@ -7,7 +7,7 @@ body {
 header {
   background: #004d40;
   color: white;
-  padding: 10px;
+  padding: 20px;
   text-align: center;
   position: relative;
 }
@@ -15,7 +15,7 @@ header {
 #logo {
   position: absolute;
   left: 20px;
-  top: 10px;
+  top: 20px;
   height: 60px;
 }
 
@@ -38,6 +38,7 @@ button {
   color: white;
   border: none;
   cursor: pointer;
+  border-radius: 4px;
 }
 
 button:hover {
@@ -57,7 +58,8 @@ table {
   margin-top: 20px;
 }
 
-table th, table td {
+table th,
+table td {
   border: 1px solid #aaa;
   padding: 8px;
   text-align: left;
@@ -68,4 +70,3 @@ table th, table td {
   gap: 10px;
   flex-wrap: wrap;
 }
-
