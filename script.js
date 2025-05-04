@@ -38,7 +38,7 @@ function activarUbicacion() {
   ruta = [];
 
   db.collection("rutas").get().then(snap => {
-    if (snap.size >= 4) return alert("Máximo 4 recicladores activos.");
+    if (snap.size >= 4) return alert("Máximo 26 recicladores activos.");
 
     watchID = navigator.geolocation.watchPosition(pos => {
       const punto = { lat: pos.coords.latitude, lng: pos.coords.longitude };
