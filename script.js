@@ -1,4 +1,3 @@
-
 // Configuración de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSy8d25hLnwk72yO9E7ovkKbB6Ba5RA0F_3aI",
@@ -114,6 +113,34 @@ function cambiarEstado(estado) {
   alert(`Estado del reciclador cambiado a: ${estado}`);
 }
 
+// Descargar ruta como JSON
+function descargarRuta() {
+  const nombre = document.getElementById("nombreReciclador").value.trim();
+  if (!nombre) {
+    alert("Ingresa el nombre del reciclador para descargar su ruta.");
+    return;
+  }
+
+  db.collection("rutas").doc(nombre).get().then(doc => {
+    if (!doc.exists) {
+      alert("No se encontró trayectoria para ese reciclador.");
+      return;
+    }
+
+    const datos = doc.data().trayectoria;
+    const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `ruta_${nombre}.json`;
+    link.click();
+  }).catch(error => {
+    console.error("Error al descargar ruta:", error);
+    alert("Ocurrió un error al descargar la ruta.");
+  });
+}
+
 // Registro de usuarios
 document.addEventListener("DOMContentLoaded", () => {
   const registroForm = document.getElementById("registroForm");
@@ -138,9 +165,6 @@ document.addEventListener("DOMContentLoaded", () => {
       <td>${correo}</td>
     `;
     tabla.appendChild(fila);
-
-    // También podrías guardar esto en Firebase si deseas:
-    // db.collection("usuarios").add({ nombre, nit, direccion, sector, telefono, correo });
 
     registroForm.reset();
     alert("Usuario registrado correctamente.");
