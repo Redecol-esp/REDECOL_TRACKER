@@ -5,13 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Seguimiento de Recicladores - REDECOL</title>
   <link rel="stylesheet" href="styles.css" />
-  <!-- Google Maps con tu API key correcta -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD3b9oEisECPPV3z9LsnxE4AYHelgGjWYs&callback=initMap" async defer></script>
+
+  <!-- Google Maps: reemplaza TU_GOOGLE_API_KEY por tu clave real -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBd25hLnwk72yO9E7ovKkB6Ba5RA0F_3aI&callback=initMap"
+    async defer>
+  </script>
 </head>
 <body>
 
   <header>
-    <img src="LOGO SIN FONDO.png" alt="Logo REDECOL E.S.P." id="logo">
+    <img src="logo.png" alt="Logo REDECOL E.S.P." id="logo">
     <h1>REDECOL E.S.P.</h1>
     <p>Seguimiento de Recolección</p>
   </header>
@@ -20,12 +24,12 @@
     <!-- Registro de Usuario -->
     <h2>Registro de Usuario</h2>
     <form id="registroForm">
-      <input type="text" id="nombre" placeholder="Nombre o Razón Social" required>
-      <input type="text" id="nit" placeholder="NIT o Cédula" required>
-      <input type="text" id="direccion" placeholder="Dirección" required>
-      <input type="text" id="sector" placeholder="Sector (industrial, comercial, residencial, institucional)" required>
-      <input type="text" id="telefono" placeholder="Teléfono" required>
-      <input type="email" id="correo" placeholder="Correo Electrónico" required>
+      <input type="text"    id="nombre" placeholder="Nombre o Razón Social" required>
+      <input type="text"    id="nit"    placeholder="NIT o Cédula"        required>
+      <input type="text"    id="direccion" placeholder="Dirección"       required>
+      <input type="text"    id="sector" placeholder="Sector"             required>
+      <input type="text"    id="telefono" placeholder="Teléfono"         required>
+      <input type="email"   id="correo"  placeholder="Correo Electrónico" required>
       <button type="submit">Registrar</button>
     </form>
 
@@ -34,6 +38,7 @@
     <!-- Control del Reciclador -->
     <h2>Control de Seguimiento</h2>
     <input type="text" id="nombreReciclador" placeholder="Nombre o ID del reciclador">
+
     <div class="buttons">
       <button onclick="activarUbicacion()">📍 Iniciar seguimiento</button>
       <button onclick="detenerUbicacion()">⏹️ Detener seguimiento</button>
@@ -53,7 +58,7 @@
       <button onclick="descargarRuta()">📥 Descargar ruta (CSV)</button>
     </div>
 
-    <div id="map" style="height: 500px; margin-top: 20px;"></div>
+    <div id="map"></div>
 
     <h2>Usuarios Registrados</h2>
     <table id="tablaUsuarios">
@@ -71,7 +76,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-  <!-- Lógica principal -->
+  <!-- Tu lógica JS -->
   <script src="script.js"></script>
 </body>
 </html>
