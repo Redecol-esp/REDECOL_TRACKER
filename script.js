@@ -1,9 +1,9 @@
-// --- CONFIGURACIÓN DE FIREBASE (usa tu proyecto redecol-74a1b)
+// --- CONFIGURACIÓN DE FIREBASE ---
 const firebaseConfig = {
-  apiKey: "AIzaSy8d25hLnwk72yO9E7ovkKbB6Ba5RA0F_3aI",
+  apiKey: "AIzaSyBd25hLnwk72yO9E7ovKkB6Ba5RA0F_3aI",
   authDomain: "redecol-74a1b.firebaseapp.com",
   projectId: "redecol-74a1b",
-  storageBucket: "redecol-74a1b.appspot.com",
+  storageBucket: "redecol-74a1b.firebasestorage.app",
   messagingSenderId: "286437914537",
   appId: "1:286437914537:web:151e8791eed2189fef6b8",
   measurementId: "G-M9MJ2LJ010"
@@ -12,15 +12,15 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// --- VARIABLES GLOBALES
+// --- VARIABLES GLOBALES ---
 let map, marker, watchID, ruta = [];
 
-// --- INICIALIZA MAPA
+// --- INICIALIZAR MAPA ---
 function initMap() {
   const centro = { lat: 4.570868, lng: -74.297333 };
   map = new google.maps.Map(document.getElementById("map"), {
     center: centro,
-    zoom: 13,
+    zoom: 13
   });
   marker = new google.maps.Marker({
     position: centro,
@@ -29,49 +29,55 @@ function initMap() {
   });
 }
 
-// --- SEGUIMIENTO GPS
+// --- SEGUIMIENTO GPS ---
 function activarUbicacion() {
   const nombre = document.getElementById("nombreReciclador").value.trim();
-  if (!nombre) {
-    return alert("Debes ingresar el nombre o ID del reciclador.");
-  }
-  // Reiniciar trayectoria
+  if (!nombre) return alert("Debes ingresar el nombre o ID del reciclador.");
+
+  // Reiniciar
   ruta = [];
-  // Solo 4 recicladores simultáneos
+
   db.collection("rutas").get().then(snap => {
     if (snap.size >= 4) return alert("Máximo 4 recicladores activos.");
-    // Inicia watchPosition
+
     watchID = navigator.geolocation.watchPosition(pos => {
       const punto = { lat: pos.coords.latitude, lng: pos.coords.longitude };
       ruta.push(punto);
       marker.setPosition(punto);
       map.setCenter(punto);
-      // Guarda en Firestore
       db.collection("rutas").doc(nombre).set({ trayectoria: ruta });
     }, err => {
-      console.error(err);
-      alert("Error GPS: " + err.message);
-    }, { enableHighAccuracy: true, timeout: 10000 });
+      console.error("GPS Error:", err);
+      alert("Error obteniendo ubicación: " + err.message);
+    }, {
+      enableHighAccuracy: true,
+      maximumAge: 0,
+      timeout: 10000
+    });
   });
 }
 
 function detenerUbicacion() {
-  if (watchID) {
+  if (watchID != null) {
     navigator.geolocation.clearWatch(watchID);
     alert("Seguimiento detenido.");
   }
 }
 
-// --- MOSTRAR RUTAS
+// --- MOSTRAR RUTAS ---
 function mostrarTrayectoria() {
   const nombre = document.getElementById("nombreReciclador").value.trim();
   if (!nombre) return alert("Ingrese el nombre del reciclador.");
+
   db.collection("rutas").doc(nombre).get().then(doc => {
     if (!doc.exists) return alert("No existe trayectoria para " + nombre);
     const datos = doc.data().trayectoria;
     const poly = new google.maps.Polyline({
-      path: datos, geodesic: true,
-      strokeColor: "#2196f3", strokeWeight: 4, map
+      path: datos,
+      geodesic: true,
+      strokeColor: "#2196f3",
+      strokeWeight: 4,
+      map
     });
     const bounds = new google.maps.LatLngBounds();
     datos.forEach(p => bounds.extend(p));
@@ -84,19 +90,23 @@ function mostrarTodasTrayectorias() {
     snap.forEach(doc => {
       const datos = doc.data().trayectoria;
       new google.maps.Polyline({
-        path: datos, geodesic: true,
-        strokeColor: "#FF0000", strokeOpacity: 0.5, strokeWeight: 2, map
+        path: datos,
+        geodesic: true,
+        strokeColor: "#FF0000",
+        strokeOpacity: 0.5,
+        strokeWeight: 2,
+        map
       });
     });
   });
 }
 
-// --- CAMBIO DE ESTADO
+// --- CAMBIO DE ESTADO ---
 function cambiarEstado(estado) {
   alert(`Estado cambiado a: ${estado}`);
 }
 
-// --- DESCARGA CSV
+// --- DESCARGAR RUTA (CSV) ---
 function descargarRuta() {
   const nombre = document.getElementById("nombreReciclador").value.trim();
   if (!nombre) return alert("Ingrese el nombre del reciclador.");
@@ -113,7 +123,7 @@ function descargarRuta() {
   });
 }
 
-// --- REGISTRO DE USUARIOS
+// --- REGISTRO DE USUARIOS ---
 document.getElementById("registroForm").addEventListener("submit", e => {
   e.preventDefault();
   const u = {
@@ -126,12 +136,11 @@ document.getElementById("registroForm").addEventListener("submit", e => {
   };
   db.collection("usuarios").add(u).then(() => {
     alert("Usuario registrado.");
-    // Añade fila en tabla
     const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${u.nombre}</td><td>${u.nit}</td><td>${u.direccion}</td>
-      <td>${u.sector}</td><td>${u.telefono}</td><td>${u.correo}</td>`;
+    tr.innerHTML = `<td>${u.nombre}</td><td>${u.nit}</td>
+      <td>${u.direccion}</td><td>${u.sector}</td>
+      <td>${u.telefono}</td><td>${u.correo}</td>`;
     document.querySelector("#tablaUsuarios tbody").append(tr);
     e.target.reset();
   });
 });
-
