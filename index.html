@@ -5,12 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Seguimiento de Recicladores - REDECOL</title>
   <link rel="stylesheet" href="styles.css" />
-
-  <!-- Google Maps: reemplaza TU_GOOGLE_API_KEY por tu clave real -->
-  <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBd25hLnwk72yO9E7ovKkB6Ba5RA0F_3aI&callback=initMap"
-    async defer>
-  </script>
 </head>
 <body>
 
@@ -21,6 +15,7 @@
   </header>
 
   <div class="container">
+
     <!-- Registro de Usuario -->
     <h2>Registro de Usuario</h2>
     <form id="registroForm">
@@ -35,7 +30,7 @@
 
     <hr>
 
-    <!-- Control del Reciclador -->
+    <!-- Control de Seguimiento -->
     <h2>Control de Seguimiento</h2>
     <input type="text" id="nombreReciclador" placeholder="Nombre o ID del reciclador">
 
@@ -70,6 +65,7 @@
       </thead>
       <tbody><!-- Dinámico --></tbody>
     </table>
+
   </div>
 
   <!-- Firebase -->
@@ -78,5 +74,10 @@
 
   <!-- Tu lógica JS -->
   <script src="script.js"></script>
+
+  <!-- Google Maps: tu clave real -->
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBd25hLnwk72yO9E7ovKkB6Ba5RA0F_3aI&callback=initMap">
+  </script>
 </body>
 </html>
