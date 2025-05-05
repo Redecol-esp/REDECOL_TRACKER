@@ -175,7 +175,6 @@ function mostrarTodasTrayectorias() {
 // --- CAMBIO DE ESTADO ---
 function cambiarEstado(estado) {
     alert(`Estado cambiado a: ${estado}`);
-    // Aquí puedes implementar la lógica para guardar el estado en Firebase
     const nombre = document.getElementById("nombreReciclador").value.trim();
     if (nombre) {
         db.collection("rutas").doc(nombre).update({ estado: estado })
