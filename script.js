@@ -39,24 +39,22 @@ function activarUbicacion() {
     // Reiniciar ruta
     ruta = [];
 
-    db.collection("rutas").get().then(snap => { // <--POTENCIAL PROBLEMA: ESTÁS OBTENIENDO *TODAS* LAS RUTAS//
-        // Considerar aumentar el límite si es necesario, pero ten en cuenta el rendimiento
-        if (snap.size >= 26) return alert("Máximo 26 recicladores activos simultáneamente (límite actual).");
-
-        watchID = navigator.geolocation.watchPosition(pos => {
-            const punto = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-            ruta.push(punto);
-            marker.setPosition(punto);
-            map.setCenter(punto);
-            db.collection("rutas").doc(nombre).set({ trayectoria: ruta });
-        }, err => {
-            console.error("GPS Error:", err);
-            alert("Error obteniendo ubicación: " + err.message);
-        }, {
-            enableHighAccuracy: true,
-            maximumAge: 0,
-            timeout: 10000
-        });
+    watchID = navigator.geolocation.watchPosition(pos => {
+        const punto = { lat: pos.coords.latitude, lng: pos.longitude };
+        ruta.push(punto);
+        marker.setPosition(punto);
+        map.setCenter(punto);
+        console.log("Guardando ubicación:", nombre, punto); // <-- AGREGADO LOGGING
+        db.collection("rutas").doc(nombre).set({ trayectoria: ruta })
+            .then(() => console.log("Ubicación guardada en Firestore:", nombre, punto)) // <-- AGREGADO LOGGING DE ÉXITO
+            .catch(error => console.error("Error al guardar en Firestore:", error)); // <-- AGREGADO LOGGING DE ERROR DE FIRESTORE
+    }, err => {
+        console.error("GPS Error:", err);
+        alert("Error obteniendo ubicación: " + err.message);
+    }, {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 10000
     });
 }
 
