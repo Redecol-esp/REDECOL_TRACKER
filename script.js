@@ -39,7 +39,7 @@ function activarUbicacion() {
     // Reiniciar ruta
     ruta = [];
 
-    db.collection("rutas").get().then(snap => {
+    db.collection("rutas").get().then(snap => { // <--POTENCIAL PROBLEMA: ESTÁS OBTENIENDO *TODAS* LAS RUTAS//
         // Considerar aumentar el límite si es necesario, pero ten en cuenta el rendimiento
         if (snap.size >= 26) return alert("Máximo 26 recicladores activos simultáneamente (límite actual).");
 
