@@ -36,35 +36,48 @@ function activarUbicacion() {
     const nombre = document.getElementById("nombreReciclador").value.trim();
     if (!nombre) return alert("Debes ingresar el nombre o ID del reciclador.");
 
-    // Reiniciar ruta
     ruta = [];
+    let initialTimeout = setTimeout(() => {
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                console.log("Ubicación inicial obtenida con getCurrentPosition:", pos);
+                handlePosition(pos);
+                // Iniciar watchPosition después de obtener la inicial
+                watchID = navigator.geolocation.watchPosition(handlePosition, handleError, { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 });
+                clearTimeout(initialTimeout);
+            },
+            handleError,
+            { enableHighAccuracy: true, maximumAge: 0, timeout: 30000 } // Timeout más largo para el intento único
+        );
+    }, 500); // Pequeño retraso antes de intentar getCurrentPosition
 
-    watchID = navigator.geolocation.watchPosition(pos => {
-        console.log("Raw Position (Éxito):", pos);
+    watchID = navigator.geolocation.watchPosition(handlePosition, handleError, { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 });
+
+    function handlePosition(pos) {
+        console.log("Posición:", pos);
         if (pos && pos.coords) {
             const lat = pos.coords.latitude;
             const lng = pos.coords.longitude;
-            console.log("Latitud (Éxito):", lat, "Longitud (Éxito):", lng);
             const punto = { lat: lat, lng: lng };
-            console.log("Punto (Éxito):", punto);
             ruta.push(punto);
             marker.setPosition(punto);
             map.setCenter(punto);
             console.log("Guardando ubicación:", nombre, punto);
             db.collection("rutas").doc(nombre).set({ trayectoria: ruta })
                 .then(() => console.log("Ubicación guardada en Firestore:", nombre, punto))
-                .catch(error => console.error("Error al guardar en Firestore (Éxito):", error));
+                .catch(error => console.error("Error al guardar en Firestore:", error));
         } else {
-            console.warn("Objeto Position o coords inválido en la función de éxito.");
+            console.warn("Objeto Position o coords inválido.");
         }
-    }, err => {
+    }
+
+    function handleError(err) {
         console.error("GPS Error:", err);
         alert("Error obteniendo ubicación: " + err.message);
-    }, {
-        enableHighAccuracy: true,
-        maximumAge: 0,
-        timeout: 30000
-    });
+        if (initialTimeout) {
+            clearTimeout(initialTimeout);
+        }
+    }
 }
 function detenerUbicacion() {
     if (watchID != null) {
