@@ -47,7 +47,7 @@ function activarUbicacion() {
                 clearTimeout(initialTimeout);
             },
             handleError,
-            { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 } // Timeout más largo para el intento único
+            { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 } // Timeout más largo para el intento único
         );
     }, 500); // Pequeño retraso antes de intentar getCurrentPosition
 
