@@ -15,8 +15,8 @@ header {
 #logo {
     position: absolute;
     left: 120px;
-    top: 120px;
-    height: 60px;
+    top: 10px;
+    height: 80px;
 }
 
 .container {
