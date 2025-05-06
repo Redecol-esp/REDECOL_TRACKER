@@ -40,14 +40,23 @@ function activarUbicacion() {
     ruta = [];
 
     watchID = navigator.geolocation.watchPosition(pos => {
-        const punto = { lat: pos.coords.latitude, lng: pos.longitude };
-        ruta.push(punto);
-        marker.setPosition(punto);
-        map.setCenter(punto);
-        console.log("Guardando ubicación:", nombre, punto); // <-- AGREGADO LOGGING
-        db.collection("rutas").doc(nombre).set({ trayectoria: ruta })
-            .then(() => console.log("Ubicación guardada en Firestore:", nombre, punto)) // <-- AGREGADO LOGGING DE ÉXITO
-            .catch(error => console.error("Error al guardar en Firestore:", error)); // <-- AGREGADO LOGGING DE ERROR DE FIRESTORE
+        console.log("Raw Position (Éxito):", pos);
+        if (pos && pos.coords) {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            console.log("Latitud (Éxito):", lat, "Longitud (Éxito):", lng);
+            const punto = { lat: lat, lng: lng };
+            console.log("Punto (Éxito):", punto);
+            ruta.push(punto);
+            marker.setPosition(punto);
+            map.setCenter(punto);
+            console.log("Guardando ubicación:", nombre, punto);
+            db.collection("rutas").doc(nombre).set({ trayectoria: ruta })
+                .then(() => console.log("Ubicación guardada en Firestore:", nombre, punto))
+                .catch(error => console.error("Error al guardar en Firestore (Éxito):", error));
+        } else {
+            console.warn("Objeto Position o coords inválido en la función de éxito.");
+        }
     }, err => {
         console.error("GPS Error:", err);
         alert("Error obteniendo ubicación: " + err.message);
@@ -57,7 +66,6 @@ function activarUbicacion() {
         timeout: 10000
     });
 }
-
 function detenerUbicacion() {
     if (watchID != null) {
         navigator.geolocation.clearWatch(watchID);
