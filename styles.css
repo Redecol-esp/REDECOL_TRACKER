@@ -3,21 +3,25 @@ body {
     margin: 0;
     background: #f2f2f2;
 }
-
 header {
-    background: #1E88E5; /* Color azul institucional para la cabecera */
+    background: #1E88E5;
     color: white;
     padding: 20px;
-    text-align: center;
-    position: relative;
+    text-align: center; /* Centra el texto si no hay logo a la derecha */
+    display: flex; /* Activa flexbox para alinear logo y texto */
+    align-items: center; /* Alinea verticalmente los elementos */
+    justify-content: flex-start; /* Alinea el contenido al inicio (izquierda) */
 }
 
 #logo {
-    position: absolute;
-    left: 20px;
-    top: 20px;
-    height: 140px;
+    height: 80px; /* Ajusta la altura del logo según necesites */
+    margin-right: 20px; /* Espacio entre el logo y el texto */
 }
+
+header h1 { /* Si tienes un h1 para "REDECOL E.S.P." */
+    margin: 0; /* Elimina el margen predeterminado del h1 */
+}
+
 
 .container {
     padding: 20px;
