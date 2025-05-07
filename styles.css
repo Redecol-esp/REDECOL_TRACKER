@@ -5,7 +5,7 @@ body {
 }
 
 header {
-    background: #004d40;
+    background: #1E88E5; /* Color azul institucional para la cabecera */
     color: white;
     padding: 20px;
     text-align: center;
@@ -35,7 +35,7 @@ form button,
 }
 
 button {
-    background: #00796b;
+    background: #1E88E5; /* Color azul institucional para los botones */
     color: white;
     border: none;
     cursor: pointer;
@@ -44,7 +44,7 @@ button {
 }
 
 button:hover {
-    background: #004d40;
+    background: #1565C0; /* Un tono más oscuro para el hover */
 }
 
 #map {
@@ -73,7 +73,7 @@ table td {
 }
 
 table th {
-    background-color: #00796b;
+    background-color: #1E88E5; /* Color azul institucional para la cabecera de la tabla */
     color: white;
 }
 
