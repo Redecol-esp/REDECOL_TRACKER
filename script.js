@@ -211,15 +211,33 @@ function descargarRuta() {
     db.collection("rutas").doc(nombre).get().then(doc => {
         if (!doc.exists || !doc.data().trayectoria) return alert("No existe trayectoria para " + nombre);
         const datos = doc.data().trayectoria;
-        let csv = "data:text/csv;charset=utf-8,latitud,longitud\n"
-            + datos.map(p => `${p.lat},${p.lng}`).join("\n");
-        const uri = encodeURI(csv);
-        const link = document.createElement("a");
-        link.href = uri;
-        link.download = `${nombre}_ruta.csv`;
-        document.body.appendChild(link); // Necesario para Firefox
-        link.click();
-        document.body.removeChild(link); // Limpiar
+        let csv = "data:text/csv;charset=utf-8,latitud,longitud,direccion\n";
+
+        const geocodePromises = datos.map(async p => {
+            try {
+                const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${p.lat},${p.lng}&key=AIzaSyBEO4kGVuRJbZ9pf4Ruf-V21ZuPLBKl6z0`);
+                const data = await response.json();
+                let direccion = "";
+                if (data.results && data.results.length > 0) {
+                    direccion = data.results[0].formatted_address;
+                }
+                return `${p.lat},${p.lng},"${direccion}"`;
+            } catch (error) {
+                console.error("Error al geocodificar:", error);
+                return `${p.lat},${p.lng},"Error al obtener dirección"`;
+            }
+        });
+
+        Promise.all(geocodePromises).then(rows => {
+            csv += rows.join("\n");
+            const uri = encodeURI(csv);
+            const link = document.createElement("a");
+            link.href = uri;
+            link.download = `${nombre}_ruta.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
     });
 }
 
