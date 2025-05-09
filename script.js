@@ -15,7 +15,7 @@ const db = firebase.firestore();
 // --- VARIABLES GLOBALES ---
 let map, marker, watchID, ruta = [];
 window.liveTrackingListener = null; // Para controlar el listener en vivo
-window.livePolyline = null;       // Para la polilínea del seguimiento en vivo
+window.livePolyline = null;        // Para la polilínea del seguimiento en vivo
 
 // --- INICIALIZAR MAPA ---
 function initMap() {
@@ -45,6 +45,8 @@ function activarUbicacion() {
                 // Iniciar watchPosition después de obtener la inicial
                 watchID = navigator.geolocation.watchPosition(handlePosition, handleError, { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 });
                 clearTimeout(initialTimeout);
+                // Mostrar indicador de grabación
+                document.getElementById("grabacionActiva").style.display = "inline";
             },
             handleError,
             { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 } // Timeout más largo para el intento único
@@ -52,6 +54,8 @@ function activarUbicacion() {
     }, 500); // Pequeño retraso antes de intentar getCurrentPosition
 
     watchID = navigator.geolocation.watchPosition(handlePosition, handleError, { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 });
+    // Mostrar indicador de grabación también al iniciar watchPosition
+    document.getElementById("grabacionActiva").style.display = "inline";
 
     function handlePosition(pos) {
         console.log("Posición:", pos);
@@ -77,12 +81,16 @@ function activarUbicacion() {
         if (initialTimeout) {
             clearTimeout(initialTimeout);
         }
+        // Ocultar indicador de grabación en caso de error
+        document.getElementById("grabacionActiva").style.display = "none";
     }
 }
 function detenerUbicacion() {
     if (watchID != null) {
         navigator.geolocation.clearWatch(watchID);
         alert("Seguimiento detenido.");
+        // Ocultar indicador de grabación
+        document.getElementById("grabacionActiva").style.display = "none";
     }
 }
 
@@ -215,16 +223,16 @@ function descargarRuta() {
 
         const geocodePromises = datos.map(async p => {
             try {
-                const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${p.lat},${p.lng}&key=AIzaSyBEO4kGVuRJbZ9pf4Ruf-V21ZuPLBKl6z0`);
+                const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=<span class="math-inline">\{p\.lat\},</span>{p.lng}&key=YOUR_API_KEY`);
                 const data = await response.json();
                 let direccion = "";
                 if (data.results && data.results.length > 0) {
                     direccion = data.results[0].formatted_address;
                 }
-                return `${p.lat},${p.lng},"${direccion}"`;
+                return `<span class="math-inline">\{p\.lat\},</span>{p.lng},"${direccion}"`;
             } catch (error) {
                 console.error("Error al geocodificar:", error);
-                return `${p.lat},${p.lng},"Error al obtener dirección"`;
+                return `<span class="math-inline">\{p\.lat\},</span>{p.lng},"Error al obtener dirección"`;
             }
         });
 
@@ -241,41 +249,57 @@ function descargarRuta() {
     });
 }
 
+// --- DESCARGAR TODAS LAS RUTAS (CSV) ---
+function descargarTodasRutas() {
+    db.collection("rutas").get().then(snapshot => {
+        let csv = "data:text/csv;charset=utf-8,nombre_reciclador,latitud,longitud,direccion\n";
+        const geocodePromises = [];
+        const allRoutesData = [];
+
+        snapshot.forEach(doc => {
+            const nombre = doc.id;
+            const trayectoria = doc.data().trayectoria;
+            if (trayectoria && trayectoria.length > 0) {
+                trayectoria.forEach(p => {
+                    geocodePromises.push(
+                        fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=<span class="math-inline">\{p\.lat\},</span>{p.lng}&key=YOUR_API_KEY`) // Asegúrate de tener tu API KEY aquí
+                            .then(response => response.json())
+                            .then(data => {
+                                let direccion = "";
+                                if (data.results && data.results.length > 0) {
+                                    direccion = data.results[0].formatted_address;
+                                }
+                                allRoutesData.push(`<span class="math-inline">\{nombre\},</span>{p.lat},<span class="math-inline">\{p\.lng\},"</span>{direccion}"`);
+                            })
+                            .catch(error => {
+                                console.error(`Error al geocodificar para <span class="math-inline">\{nombre\} \(</span>{p.lat}, ${p.lng}):`, error);
+                                allRoutesData.push(`<span class="math-inline">\{nombre\},</span>{p.lat},${p.lng},"Error al obtener dirección"`);
+                            })
+                    );
+                });
+            }
+        });
+
+        Promise.all(geocodePromises).then(() => {
+            csv += allRoutesData.join("\n");
+            const uri = encodeURI(csv);
+            const link = document.createElement("a");
+            link.href = uri;
+            link.download = `todas_las_rutas.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    });
+}
+
 // --- REGISTRO DE USUARIOS ---
 document.getElementById("registroForm").addEventListener("submit", e => {
     e.preventDefault();
     const u = {
         nombre: document.getElementById("nombre").value,
-        nit:     document.getElementById("nit").value,
+        nit:    document.getElementById("nit").value,
         direccion: document.getElementById("direccion").value,
         sector: document.getElementById("sector").value,
         telefono: document.getElementById("telefono").value,
-        correo: document.getElementById("correo").value
-    };
-    db.collection("usuarios").add(u).then(() => {
-        alert("Usuario registrado.");
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${u.nombre}</td><td>${u.nit}</td>
-            <td>${u.direccion}</td><td>${u.sector}</td>
-            <td>${u.telefono}</td><td>${u.correo}</td>`;
-        document.querySelector("#tablaUsuarios tbody").append(tr);
-        e.target.reset();
-    });
-});
-
-// --- CARGAR USUARIOS REGISTRADOS AL INICIO ---
-function cargarUsuariosRegistrados() {
-    db.collection("usuarios").get().then(snapshot => {
-        const tbody = document.querySelector("#tablaUsuarios tbody");
-        snapshot.forEach(doc => {
-            const usuario = doc.data();
-            const tr = document.createElement("tr");
-            tr.innerHTML = `<td>${usuario.nombre}</td><td>${usuario.nit}</td>
-                <td>${usuario.direccion}</td><td>${usuario.sector}</td>
-                <td>${usuario.telefono}</td><td>${usuario.correo}</td>`;
-            tbody.append(tr);
-        });
-    });
-}
-
-window.onload = cargarUsuariosRegistrados;
+        correo: document.
