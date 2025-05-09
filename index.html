@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Seguimiento de Recicladores - REDECOL</title>
     <link rel="stylesheet" href="styles.css" />
+    <script>
+      function initMap() {
+        const centro = { lat: 4.570868, lng: -74.297333 };
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: centro,
+          zoom: 13
+        });
+        marker = new google.maps.Marker({
+          position: centro,
+          map,
+          icon: "https://maps.google.com/mapfiles/ms/icons/green-dot.png" // Marcador genérico
+        });
+      }
+    </script>
 </head>
 <body>
 
@@ -80,7 +94,7 @@
     <script src="script.js"></script>
 
     <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBEO4kGVuRJbZ9pf4Ruf-V21ZuPLBKl6z0&callback=initMap">
+        src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap">
     </script>
 </body>
 </html>
