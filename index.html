@@ -1,81 +1,124 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Seguimiento de Recicladores - REDECOL</title>
-    <link rel="stylesheet" href="styles.css" />
+  <meta charset="utf-8" />
+  <title>Registro de Recicladores</title>
+  <style>
+    #map {
+      height: 500px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <img src="LOGO REDECOL.png" alt="LOGO REDECOL.png" id="logo">
-        <h1>REDECOL E.S.P.</h1>
-        <p>Seguimiento de Recolección</p>
-    </header>
 
-    <div class="container">
-        <h2>Registro de Usuario</h2>
-        <form id="registroForm">
-            <input type="text" id="nombre" placeholder="Nombre o Razón Social" required>
-            <input type="text" id="nit" placeholder="NIT o Cédula" required>
-            <input type="text" id="direccion" placeholder="Dirección" required>
-            <input type="text" id="sector" placeholder="Sector" required>
-            <input type="text" id="telefono" placeholder="Teléfono" required>
-            <input type="email" id="correo" placeholder="Correo Electrónico" required>
-            <button type="submit">Registrar</button>
-        </form>
+  <h2>Registro de Recicladores</h2>
 
-        <hr>
+  <div id="map"></div>
 
-        <h2>Control de Seguimiento</h2>
-        <input type="text" id="nombreReciclador" placeholder="Nombre o ID del reciclador">
+  <form id="registroForm">
+    <input type="text" id="nombre" placeholder="Nombre del reciclador" required><br>
+    <input type="text" id="nit" placeholder="NIT" required><br>
+    <input type="text" id="direccion" placeholder="Dirección" required><br>
+    <input type="text" id="sector" placeholder="Sector" required><br>
+    <input type="tel" id="telefono" placeholder="Teléfono" required><br>
+    <input type="email" id="correo" placeholder="Correo electrónico" required><br>
+    <button type="submit">Registrar Reciclador</button>
+  </form>
 
-        <div class="buttons">
-            <button onclick="activarUbicacion()">📍 Iniciar seguimiento</button>
-            <button onclick="detenerUbicacion()">⏹️ Detener seguimiento</button>
-        </div>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
-        <h3>Seguimiento en Vivo:</h3>
-        <div class="buttons">
-            <button onclick="iniciarSeguimientoEnVivo()">🔴 Iniciar Seguimiento en Vivo</button>
-            <button onclick="detenerSeguimientoEnVivo()">⚫ Detener Seguimiento en Vivo</button>
-        </div>
+  <!-- Google Maps -->
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBEO4kGVuRJbZ9pf4Ruf-V21ZuPLBKl6z0&callback=initMap">
+  </script>
 
-        <h3>Estado del Servicio:</h3>
-        <div class="buttons">
-            <button onclick="cambiarEstado('Disponible')">Disponible</button>
-            <button onclick="cambiarEstado('En Ruta')">En Ruta</button>
-            <button onclick="cambiarEstado('Finalizado')">Finalizado</button>
-        </div>
+  <script>
+    // Configuración de Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyBEO4kGVuRJbZ9pf4Ruf-V21ZuPLBKl6z0",
+      authDomain: "tuprojecto.firebaseapp.com",
+      projectId: "tuprojecto",
+      storageBucket: "tuprojecto.appspot.com",
+      messagingSenderId: "1234567890",
+      appId: "1:1234567890:web:abcdefghij"
+    };
 
-        <h3>Visualización de Rutas:</h3>
-        <div class="buttons">
-            <button onclick="mostrarTrayectoria()">Ver mi ruta</button>
-            <button onclick="mostrarTodasTrayectorias()">Ver todas las trayectorias</button>
-            <button onclick="descargarRuta()">📥 Descargar ruta (CSV)</button>
-        </div>
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-        <div id="map"></div>
+    let map;
+    let marker;
 
-        <h2>Usuarios Registrados</h2>
-        <table id="tablaUsuarios">
-            <thead>
-                <tr>
-                    <th>Nombre</th><th>NIT/Cédula</th><th>Dirección</th>
-                    <th>Sector</th><th>Teléfono</th><th>Correo</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
+    function initMap() {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 7.0652, lng: -73.8511 }, // Centro inicial (Barrancabermeja)
+        zoom: 14,
+      });
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+      marker = new google.maps.Marker({
+        map,
+        draggable: false,
+      });
 
-    <script src="script.js"></script>
+      if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(
+          position => {
+            const pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            };
+            map.setCenter(pos);
+            marker.setPosition(pos);
+            obtenerDireccion(pos);
+          },
+          () => alert("No se pudo obtener la ubicación.")
+        );
+      } else {
+        alert("Tu navegador no soporta geolocalización.");
+      }
+    }
 
-    <script async defer
-            src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap">
-    </script>
+    function obtenerDireccion(pos) {
+      const geocoderURL = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${pos.lat},${pos.lng}&key=AIzaSyBEO4kGVuRJbZ9pf4Ruf-V21ZuPLBKl6z0`;
+      fetch(geocoderURL)
+        .then(res => res.json())
+        .then(data => {
+          const direccion = data.results[0]?.formatted_address || "Dirección no encontrada";
+          document.getElementById("direccion").value = direccion;
+        })
+        .catch(err => console.error("Error al obtener la dirección:", err));
+    }
+
+    document.getElementById("registroForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const reciclador = {
+        nombre: document.getElementById("nombre").value,
+        nit: document.getElementById("nit").value,
+        direccion: document.getElementById("direccion").value,
+        sector: document.getElementById("sector").value,
+        telefono: document.getElementById("telefono").value,
+        correo: document.getElementById("correo").value,
+        latitud: marker.getPosition().lat(),
+        longitud: marker.getPosition().lng(),
+        fecha: new Date()
+      };
+
+      db.collection("recicladores").add(reciclador)
+        .then(() => {
+          alert("Reciclador registrado con éxito.");
+          document.getElementById("registroForm").reset();
+        })
+        .catch(error => {
+          console.error("Error al guardar:", error);
+          alert("Error al registrar.");
+        });
+    });
+  </script>
+
 </body>
 </html>
