@@ -297,9 +297,4 @@ function descargarTodasRutas() {
 document.getElementById("registroForm").addEventListener("submit", e => {
     e.preventDefault();
     const u = {
-        nombre: document.getElementById("nombre").value,
-        nit:    document.getElementById("nit").value,
-        direccion: document.getElementById("direccion").value,
-        sector: document.getElementById("sector").value,
-        telefono: document.getElementById("telefono").value,
-        correo: document.
+        nombre
