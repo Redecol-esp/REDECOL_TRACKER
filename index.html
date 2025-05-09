@@ -1,81 +1,50 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Seguimiento de Recicladores - REDECOL</title>
-  <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seguimiento de Recicladores - REDECOL</title>
+    <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-  <header>
-    <img src="LOGO REDECOL.png" alt="LOGO REDECOL.png" id="logo">
-    <h1>REDECOL E.S.P.</h1>
-    <p>Seguimiento de Recolección</p>
-  </header>
+    <header>
+        <img src="LOGO REDECOL.png" alt="LOGO REDECOL.png" id="logo">
+        <h1>REDECOL E.S.P.</h1>
+        <p>Seguimiento de Recolección</p>
+    </header>
 
-  <div class="container">
+    <div class="container">
 
-    <h2>Registro de Usuario</h2>
-    <form id="registroForm">
-      <input type="text" id="nombre" placeholder="Nombre o Razón Social" required>
-      <input type="text" id="nit" placeholder="NIT o Cédula" required>
-      <input type="text" id="direccion" placeholder="Dirección" required>
-      <input type="text" id="sector" placeholder="Sector" required>
-      <input type="text" id="telefono" placeholder="Teléfono" required>
-      <input type="email" id="correo" placeholder="Correo Electrónico" required>
-      <button type="submit">Registrar</button>
-    </form>
+        <h2>Registro de Usuario</h2>
+        <form id="registroForm">
+            <input type="text"        id="nombre" placeholder="Nombre o Razón Social" required>
+            <input type="text"        id="nit"         placeholder="NIT o Cédula"             required>
+            <input type="text"        id="direccion" placeholder="Dirección"             required>
+            <input type="text"        id="sector" placeholder="Sector"                  required>
+            <input type="text"        id="telefono" placeholder="Teléfono"                 required>
+            <input type="text"        id="nit"         placeholder="NIT o Cédula"                 required>
+            <input type="text"        id="direccion" placeholder="Dirección"                     required>
+            <input type="text"        id="sector" placeholder="Sector"                          required>
+            <input type="text"        id="telefono" placeholder="Teléfono"                        required>
+            <input type="email"       id="correo"  placeholder="Correo Electrónico" required>
+            <button type="submit">Registrar</button>
+        </form>
+@@ -34,6 +34,7 @@
 
-    <hr>
+        <div class="buttons">
+            <button onclick="activarUbicacion()">📍 Iniciar seguimiento</button>
+            <span id="grabacionActiva" style="display:none; color: red; margin-left: 10px;">🔴 Grabando...</span>
+            <button onclick="detenerUbicacion()">⏹️ Detener seguimiento</button>
+        </div>
 
-    <h2>Control de Seguimiento</h2>
-    <input type="text" id="nombreReciclador" placeholder="Nombre o ID del reciclador">
+@@ -54,7 +55,8 @@
+        <div class="buttons">
+            <button onclick="mostrarTrayectoria()">Ver mi ruta</button>
+            <button onclick="mostrarTodasTrayectorias()">Ver todas las trayectorias</button>
+            <button onclick="descargarRuta()">📥 Descargar ruta (CSV)</button>
+            <button onclick="descargarRuta()">📥 Descargar mi ruta (CSV)</button>
+            <button onclick="descargarTodasRutas()">📥 Descargar todas las rutas (CSV)</button>
+        </div>
 
-    <div class="buttons">
-      <button onclick="activarUbicacion()">📍 Iniciar seguimiento</button>
-      <button onclick="detenerUbicacion()">⏹️ Detener seguimiento</button>
-    </div>
-
-    <h3>Seguimiento en Vivo:</h3>
-    <div class="buttons">
-      <button onclick="iniciarSeguimientoEnVivo()">🔴 Iniciar Seguimiento en Vivo</button>
-      <button onclick="detenerSeguimientoEnVivo()">⚫ Detener Seguimiento en Vivo</button>
-    </div>
-
-    <h3>Estado del Servicio:</h3>
-    <div class="buttons">
-      <button onclick="cambiarEstado('Disponible')">Disponible</button>
-      <button onclick="cambiarEstado('En Ruta')">En Ruta</button>
-      <button onclick="cambiarEstado('Finalizado')">Finalizado</button>
-    </div>
-
-    <h3>Visualización de Rutas:</h3>
-    <div class="buttons">
-      <button onclick="mostrarTrayectoria()">Ver mi ruta</button>
-      <button onclick="mostrarTodasTrayectorias()">Ver todas las trayectorias</button>
-      <button onclick="descargarRuta()">📥 Descargar ruta (CSV)</button>
-    </div>
-
-    <div id="map"></div>
-
-    <h2>Usuarios Registrados</h2>
-    <table id="tablaUsuarios">
-      <thead>
-        <tr>
-          <th>Nombre</th><th>NIT/Cédula</th><th>Dirección</th>
-          <th>Sector</th><th>Teléfono</th><th>Correo</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-
-  </div>
-
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-  <script src="script.js"></script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBEO4kGVuRJbZ9pf4Ruf-V21ZuPLBKl6z0&callback=initMap"></script>
-
-</body>
-</html>
+        <div id="map"></div>
