@@ -6,6 +6,7 @@
     <title>Seguimiento de Recicladores - REDECOL</title>
     <link rel="stylesheet" href="styles.css" />
     <script>
+      // --- Inicializar Mapa ---
       function initMap() {
         const centro = { lat: 4.570868, lng: -74.297333 };
         map = new google.maps.Map(document.getElementById("map"), {
@@ -91,10 +92,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-    <script src="script.js"></script>
-
-    <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap">
-    </script>
+    <script>
 </body>
 </html>
