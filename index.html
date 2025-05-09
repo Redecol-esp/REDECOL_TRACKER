@@ -7,22 +7,45 @@
     <link rel="stylesheet" href="styles.css" />
     <script>
       // --- Inicializar Mapa ---
+      // 1. Declarar la variable 'map' en el ámbito global.  Esto es crucial
+      //    para que otras funciones (como activarUbicacion) puedan acceder
+      //    al objeto del mapa de Google.
+      let map;
+      let marker; // También declaramos marker globalmente para poder usarlo en otras funciones
+
+      // 2. La función initMap() se encarga de crear el mapa de Google.
       function initMap() {
+        // 2.1 Definimos las coordenadas del centro del mapa (Bogotá, Colombia).
         const centro = { lat: 4.570868, lng: -74.297333 };
+
+        // 2.2 Creamos el mapa usando el constructor de Google Maps.
+        //     El primer argumento es el elemento HTML donde se mostrará el mapa
+        //     (en este caso, el div con id "map").  El segundo argumento
+        //     es un objeto con las opciones de configuración del mapa.
         map = new google.maps.Map(document.getElementById("map"), {
           center: centro,
-          zoom: 13
+          zoom: 13, // Nivel de zoom inicial
         });
+
+        // 2.3 Creamos un marcador inicial en el centro del mapa.
         marker = new google.maps.Marker({
-          position: centro,
-          map,
-          icon: "https://maps.google.com/mapfiles/ms/icons/green-dot.png" // Marcador genérico
+            position: centro,
+            map: map,
+            icon: "https://maps.google.com/mapfiles/ms/icons/green-dot.png"  // Marcador por defecto
         });
       }
     </script>
+    // 3. Incluimos la API de Google Maps.  La parte "&callback=initMap"
+    //    es fundamental:  indica que la función initMap() se llamará
+    //    automáticamente cuando la API de Google Maps esté completamente cargada.
+    //    El atributo 'async defer' hace que la carga de la API no bloquee
+    //    la carga del resto de la página.
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap">
+    </script>
 </head>
 <body>
-
+    // 4. Estructura HTML de la página.
     <header>
         <img src="LOGO REDECOL.png" alt="LOGO REDECOL.png" id="logo">
         <h1>REDECOL E.S.P.</h1>
@@ -30,7 +53,7 @@
     </header>
 
     <div class="container">
-
+        // 5. Formulario de registro de usuarios.
         <h2>Registro de Usuario</h2>
         <form id="registroForm">
             <input type="text"        id="nombre" placeholder="Nombre o Razón Social" required>
@@ -44,6 +67,7 @@
 
         <hr>
 
+        // 6. Sección de control de seguimiento.
         <h2>Control de Seguimiento</h2>
         <input type="text" id="nombreReciclador" placeholder="Nombre o ID del reciclador">
 
@@ -53,12 +77,14 @@
             <button onclick="detenerUbicacion()">⏹️ Detener seguimiento</button>
         </div>
 
+        // 7. Sección de seguimiento en vivo.
         <h3>Seguimiento en Vivo:</h3>
         <div class="buttons">
             <button onclick="iniciarSeguimientoEnVivo()">🔴 Iniciar Seguimiento en Vivo</button>
             <button onclick="detenerSeguimientoEnVivo()">⚫ Detener Seguimiento en Vivo</button>
         </div>
 
+        // 8. Sección de estado del servicio.
         <h3>Estado del Servicio:</h3>
         <div class="buttons">
             <button onclick="cambiarEstado('Disponible')">Disponible</button>
@@ -66,6 +92,7 @@
             <button onclick="cambiarEstado('Finalizado')">Finalizado</button>
         </div>
 
+        // 9. Sección de visualización de rutas.
         <h3>Visualización de Rutas:</h3>
         <div class="buttons">
             <button onclick="mostrarTrayectoria()">Ver mi ruta</button>
@@ -74,8 +101,11 @@
             <button onclick="descargarTodasRutas()">📥 Descargar todas las rutas (CSV)</button>
         </div>
 
+        // 10. Div donde se mostrará el mapa de Google.  El ID "map"
+        //     es el que se usa en la función initMap() para inicializar el mapa.
         <div id="map"></div>
 
+        // 11. Sección de usuarios registrados.
         <h2>Usuarios Registrados</h2>
         <table id="tablaUsuarios">
             <thead>
@@ -89,9 +119,6 @@
 
     </div>
 
+    // 12. Inclusión de las bibliotecas de Firebase.
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
-    <script>
-</body>
-</html>
